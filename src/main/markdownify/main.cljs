@@ -11,6 +11,18 @@
 (defn html->md [html]
   (.makeMarkdown showdown-converter html))
 
+(defonce flash-message (reagent/atom nil))
+(defonce flash-timeout (reagent/atom nil))
+
+(defn set-flash-message 
+  ([message]
+   (set-flash-message message 3000))
+  ([message ms]
+   (js/clearTimeout @flash-timeout)
+   (reset! flash-message message) 
+   (reset! flash-timeout 
+           (js/setTimeout #(reset! flash-message nil) ms))))
+
 (defonce text-state (reagent/atom {:format :md 
                                    :value ""}))
 
@@ -43,6 +55,9 @@
 
 (defn app []
   [:div 
+   [:div
+    {:id "flash-message"}
+    @flash-message]
    [:h1 "Markdownify"]
    [:div 
     {:style {:display :flex}}
@@ -50,30 +65,32 @@
      {:style {:flex "1"}}
      [:h2 "Markdown"]
      [:textarea 
-      {:on-change (fn [e]
-                    (reset! text-state {:format :md 
-                                        :value (-> e .-target .-value)}))
+      {:on-change #(reset! text-state {:format :md 
+                                       :value (-> % .-target .-value)})
        :value (->md @text-state)
        :style {:resize "none"
                :width "100%"
                :height "500px"}}]
      [:button
-      {:on-click #(copy-to-clipboard (->md @text-state))}
+      {:on-click (fn []
+                   (copy-to-clipboard (->md @text-state))
+                   (set-flash-message "Markdown copied to clipboard"))} 
       "Copy Markdown"]]
 
     [:div
      {:style {:flex "2"}}
      [:h2 "HTML"]
      [:textarea 
-      {:on-change (fn [e]
-                    (reset! text-state {:format :html 
-                                        :value (-> e .-target .-value)}))
+      {:on-change #(reset! text-state {:format :html 
+                                       :value (-> % .-target .-value)})
        :value (->html @text-state)
        :style {:resize "none"
                :width "100%"
                :height "500px"}}]
      [:button
-      {:on-click #(copy-to-clipboard (->html @text-state))}
+      {:on-click (fn []
+                   (copy-to-clipboard (->html @text-state))
+                   (set-flash-message "HTML copied to clipboard"))} 
       "Copy HTML"]]
 
     [:div
