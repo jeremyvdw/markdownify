@@ -1,5 +1,6 @@
 (ns markdownify.main
   (:require [reagent.core :as reagent]
+            [reagent.dom :as dom]
             ["showdown" :as showdown]))
 
 (defonce showdown-converter 
@@ -101,8 +102,8 @@
        :dangerouslySetInnerHTML {:__html (->html @text-state)}}]]]])
 
 (defn mount! []
-  (reagent/render [app]
-                  (.getElementById js/document "app")))
+  (dom/render [app]
+              (.getElementById js/document "app")))
 
 (defn main! []
   (mount!))
