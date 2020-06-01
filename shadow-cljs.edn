@@ -3,13 +3,15 @@
                 "src/main"
                 "src/test"]
 
- :dependencies [[reagent "0.10.0"]]
+ :dependencies [[reagent "0.10.0"]
+                [cider/cider-nrepl "0.24.0"]
+                [cljfmt "0.6.7"]]
 
  :dev-http {9090 "public/"}
 
  :builds
- {:app {:output-dir "public/compiledjs/"
-        :asset-path "compiledjs"
+ {:app {:output-dir "public/compiledjs"
+        :asset-path "/"
         :target :browser
         :modules {:main {:init-fn markdownify.main/main!}}
         :devtools {:after-load markdownify.main/reload!}}}}
