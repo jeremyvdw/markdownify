@@ -3,7 +3,7 @@
             [reagent.dom :as dom]
             ["showdown" :as showdown]))
 
-(defonce showdown-converter 
+(defonce showdown-converter
   (showdown/Converter.))
 
 (defn md->html [md]
@@ -15,16 +15,16 @@
 (defonce flash-message (reagent/atom nil))
 (defonce flash-timeout (reagent/atom nil))
 
-(defn set-flash-message 
+(defn set-flash-message
   ([message]
    (set-flash-message message 3000))
   ([message ms]
    (js/clearTimeout @flash-timeout)
-   (reset! flash-message message) 
-   (reset! flash-timeout 
+   (reset! flash-message message)
+   (reset! flash-timeout
            (js/setTimeout #(reset! flash-message nil) ms))))
 
-(defonce text-state (reagent/atom {:format :md 
+(defonce text-state (reagent/atom {:format :md
                                    :value ""}))
 
 (defn ->md [{:keys [format value]}]
@@ -41,7 +41,7 @@
 (defn copy-to-clipboard [s]
   (let [el (.createElement js/document "textarea")
         selected (when (pos? (-> js/document .getSelection .-rangeCount))
-                   (-> js/document .getSelection (.getRangeAt 0)))]          
+                   (-> js/document .getSelection (.getRangeAt 0)))]
     (set! (.-value el) s)
     (.setAttribute el "readonly" "")
     (set! (-> el .-style .-position) "absolute")
@@ -55,18 +55,18 @@
       (-> js/document .getSelection (.addRange selected)))))
 
 (defn app []
-  [:div 
+  [:div
    [:div
     {:id "flash-message"}
     @flash-message]
    [:h1 "Markdownify"]
-   [:div 
+   [:div
     {:style {:display :flex}}
     [:div
      {:style {:flex "1"}}
      [:h2 "Markdown"]
-     [:textarea 
-      {:on-change #(reset! text-state {:format :md 
+     [:textarea
+      {:on-change #(reset! text-state {:format :md
                                        :value (-> % .-target .-value)})
        :value (->md @text-state)
        :style {:resize "none"
@@ -75,14 +75,14 @@
      [:button
       {:on-click (fn []
                    (copy-to-clipboard (->md @text-state))
-                   (set-flash-message "Markdown copied to clipboard"))} 
+                   (set-flash-message "Markdown copied to clipboard"))}
       "Copy Markdown"]]
 
     [:div
      {:style {:flex "2"}}
      [:h2 "HTML"]
-     [:textarea 
-      {:on-change #(reset! text-state {:format :html 
+     [:textarea
+      {:on-change #(reset! text-state {:format :html
                                        :value (-> % .-target .-value)})
        :value (->html @text-state)
        :style {:resize "none"
@@ -91,13 +91,13 @@
      [:button
       {:on-click (fn []
                    (copy-to-clipboard (->html @text-state))
-                   (set-flash-message "HTML copied to clipboard"))} 
+                   (set-flash-message "HTML copied to clipboard"))}
       "Copy HTML"]]
 
     [:div
      {:style {:flex "3"}}
      [:h2 "HTML preview"]
-     [:div 
+     [:div
       {:style {:height "500px"}
        :dangerouslySetInnerHTML {:__html (->html @text-state)}}]]]])
 
