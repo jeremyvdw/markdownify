@@ -1,11 +1,11 @@
 {
   "name": "markdownify",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "scripts": {
     "build": "shadow-cljs release --verbose app"
   },
   "devDependencies": {
-    "shadow-cljs": "^2.9.10"
+    "shadow-cljs": "^2.10.15"
   },
   "dependencies": {
     "react": "16.13.0",
